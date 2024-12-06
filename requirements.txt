@@ -1,0 +1,16 @@
+webvtt-py
+openai-whisper
+moviepy==1.0.3
+pytube
+pytubefix
+youtube-transcript-api
+langchain_core
+langchain_community
+lancedb
+accelerate
+langchain_core
+langchain_community
+lancedb
+gradio
+opencv-python
+accelerate>=0.26.0

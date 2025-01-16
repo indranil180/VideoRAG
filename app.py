@@ -112,7 +112,9 @@ def process_query(video_qa: VideoQA, query: str) -> tuple[List[tuple[str, str]],
 
 def create_demo():
     rag_chain = get_default_rag_chain()
-    video_qa = VideoQA(rag_chain=rag_chain)
+    # video_qa = VideoQA(rag_chain=rag_chain) ## commenting the code since this line is causing error with latest gradio version
+    def init_state():
+        return VideoQA(rag_chain=rag_chain)
 
     predefined_questions = [
         "Did the speaker talked about Rajat Patidar and what is his take on his retention?",
@@ -121,7 +123,7 @@ def create_demo():
     ]
     
     with gr.Blocks(theme="dark") as demo:
-        gr.HTML("<h1 style='text-align: center'>Video Q&A System with RAG</h1>")
+        gr.HTML("<h1 style='text-align: center'>Video Q&A System</h1>")
         
         with gr.Row():
             # Video player
@@ -137,12 +139,6 @@ def create_demo():
         
         # Query input
         with gr.Row():
-            # query = gr.Textbox(
-            #     label="Ask a question",
-            #     placeholder="Type your question here...",
-            #     scale=8
-            # )
-
             query = gr.Dropdown(
                 choices=predefined_questions,
                 allow_custom_value=True,
@@ -152,19 +148,26 @@ def create_demo():
 
             submit_btn = gr.Button("Ask", variant="primary", scale=1)
 
-        state = gr.State(video_qa)
+        state = gr.State(None)  # Initialize with None instead of VideoQA instance
+        
+        # Modified process_query wrapper to handle None state
+        def wrapped_process_query(state, query):
+            if state is None:
+                state = init_state()
+            return process_query(state, query)
         
         # Handle query submission
         submit_btn.click(
-            process_query,
+            wrapped_process_query,
             inputs=[state, query],
             outputs=[chatbot, state, video]
         )
         
-        # Clear button
+        # Modified clear function
         def clear_fn():
-            new_qa = VideoQA(rag_chain=rag_chain)
-            cleanup_temp_file(video_qa)
+            if state is not None:
+                cleanup_temp_file(state)
+            new_qa = init_state()
             return [], new_qa, None
 
         gr.Button("Clear").click(

@@ -19,6 +19,20 @@ The project tackles the challenge of applying RAG to a non-standard domain - vid
 3. Retrieval & UI
   * Multimodal RAG System: LangChain is used to build a multimodal RAG system for retrieving relevant video segments based on user queries.
   * UI Interface: Gradio provides a user-friendly interface for interacting with the system. Users can input queries and the system will identify the matching segment and play the video from the correct timestamp.
+ 
+## Steps to run
+Data preparation for the Video QnA
+```
+python setup_data.py
+```
+Setting up vectorDB
+```
+python create_vectordb.py
+```
+Run gradio app
+```
+python app.py
+```
 ## Technology Stack
 
 OpenAI Whisper,
